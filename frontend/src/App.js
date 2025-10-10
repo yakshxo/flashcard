@@ -9,7 +9,9 @@ import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import GenerateFlashcards from './components/GenerateFlashcards';
 import FlashcardViewer from './components/FlashcardViewer';
+import BuyCredits from './components/BuyCredits';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 
 // Configure axios defaults
 axios.defaults.baseURL = 'http://localhost:3001';
@@ -58,6 +60,13 @@ function App() {
     toast.success('Logged out successfully!');
   };
 
+  const updateUserCredits = (newBalance) => {
+    setUser(prevUser => ({
+      ...prevUser,
+      flashcardCredits: newBalance
+    }));
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -97,6 +106,10 @@ function App() {
             path="/flashcards/:id" 
             element={user ? <FlashcardViewer user={user} /> : <Navigate to="/login" />} 
           />
+          <Route 
+            path="/buy-credits" 
+            element={user ? <BuyCredits user={user} onCreditsUpdated={updateUserCredits} /> : <Navigate to="/login" />} 
+          />
           
           {/* Default redirect */}
           <Route 
@@ -104,6 +117,9 @@ function App() {
             element={<Navigate to={user ? "/dashboard" : "/login"} />} 
           />
         </Routes>
+        
+        {/* Footer - only show when user is logged in */}
+        {user && <Footer />}
       </div>
     </Router>
   );

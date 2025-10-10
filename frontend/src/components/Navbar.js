@@ -9,49 +9,70 @@ function Navbar({ user, logout }) {
   };
 
   return (
-    <nav className="bg-white shadow-lg">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between h-16">
+    <nav className="bg-white/95 backdrop-blur-sm shadow-lg border-b border-gray-100 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex justify-between h-18">
           <div className="flex items-center">
-            <Link to="/dashboard" className="flex-shrink-0 flex items-center">
-              <h1 className="text-xl font-bold text-gray-800">FlashCard Generator</h1>
+            <Link to="/dashboard" className="flex-shrink-0 flex items-center group">
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 w-10 h-10 rounded-xl flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200">
+                <span className="text-white font-bold text-lg">S</span>
+              </div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">SnapStudy</h1>
             </Link>
-            <div className="ml-10 flex items-baseline space-x-4">
+            <div className="ml-12 flex items-center space-x-8">
               <Link
                 to="/dashboard"
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                className={`px-4 py-2 rounded-xl font-semibold transition-all duration-200 ${
                   isActive('/dashboard')
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 Dashboard
               </Link>
               <Link
                 to="/generate"
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                className={`px-4 py-2 rounded-xl font-semibold transition-all duration-200 ${
                   isActive('/generate')
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
-                Generate Flashcards
+                Generate
+              </Link>
+              <Link
+                to="/buy-credits"
+                className={`px-4 py-2 rounded-xl font-semibold transition-all duration-200 ${
+                  isActive('/buy-credits')
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                Buy Credits
               </Link>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">Credits:</span>
-              <span className="px-2 py-1 bg-blue-100 text-blue-800 text-sm font-semibold rounded-full">
-                {user.flashcardCredits}
-              </span>
+          <div className="flex items-center space-x-6">
+            <Link to="/buy-credits" className="flex items-center space-x-3 bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 px-4 py-2 rounded-2xl transition-all duration-200 border border-blue-200 hover:border-blue-300 group">
+              <span className="text-sm font-medium text-gray-700">Credits:</span>
+              <div className="flex items-center space-x-2">
+                <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-bold rounded-full">
+                  {user.hasUnlimitedCredits ? '∞' : user.flashcardCredits}
+                </span>
+                <span className="text-blue-500 group-hover:scale-110 transition-transform duration-200">+</span>
+              </div>
+            </Link>
+            
+            <div className="flex items-center space-x-3 bg-gray-50 px-4 py-2 rounded-2xl">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-sm">{user.name.charAt(0).toUpperCase()}</span>
+              </div>
+              <span className="font-medium text-gray-700">Hey, {user.name}!</span>
             </div>
-            <div className="relative">
-              <span className="text-sm text-gray-700">Hello, {user.name}</span>
-            </div>
+            
             <button
               onClick={logout}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-2 rounded-2xl font-semibold transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
             >
               Logout
             </button>

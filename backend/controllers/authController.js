@@ -35,12 +35,18 @@ const register = async (req, res) => {
             });
         }
 
+        // Check if this is a developer account
+        const developerEmails = ['yakshthakar24@gmail.com', 'harshilv3034@gmail.com'];
+        const isDeveloper = developerEmails.includes(email.toLowerCase());
+        
         // Create user
         user = await User.create({
             name,
             email,
             password,
-            flashcardCredits: 10 // Give new users 10 free credits
+            flashcardCredits: isDeveloper ? 999999 : 5, // Developers get unlimited (represented as 999999), others get 5
+            isDeveloper: isDeveloper,
+            hasUnlimitedCredits: isDeveloper
         });
 
         // Generate token
@@ -56,7 +62,9 @@ const register = async (req, res) => {
                     name: user.name,
                     email: user.email,
                     flashcardCredits: user.flashcardCredits,
-                    subscriptionStatus: user.subscriptionStatus
+                    subscriptionStatus: user.subscriptionStatus,
+                    isDeveloper: user.isDeveloper,
+                    hasUnlimitedCredits: user.hasUnlimitedCredits
                 }
             }
         });
@@ -120,7 +128,9 @@ const login = async (req, res) => {
                     email: user.email,
                     flashcardCredits: user.flashcardCredits,
                     subscriptionStatus: user.subscriptionStatus,
-                    totalFlashcardsGenerated: user.totalFlashcardsGenerated
+                    totalFlashcardsGenerated: user.totalFlashcardsGenerated,
+                    isDeveloper: user.isDeveloper,
+                    hasUnlimitedCredits: user.hasUnlimitedCredits
                 }
             }
         });
@@ -152,7 +162,9 @@ const getMe = async (req, res) => {
                     flashcardCredits: user.flashcardCredits,
                     subscriptionStatus: user.subscriptionStatus,
                     totalFlashcardsGenerated: user.totalFlashcardsGenerated,
-                    createdAt: user.createdAt
+                    createdAt: user.createdAt,
+                    isDeveloper: user.isDeveloper,
+                    hasUnlimitedCredits: user.hasUnlimitedCredits
                 }
             }
         });

@@ -43,6 +43,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+    isDeveloper: {
+        type: Boolean,
+        default: false
+    },
+    hasUnlimitedCredits: {
+        type: Boolean,
+        default: false
+    },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     createdAt: {
@@ -79,6 +87,11 @@ userSchema.methods.matchPassword = async function(enteredPassword) {
 
 // Deduct credits
 userSchema.methods.deductCredits = async function(amount) {
+    // Skip deduction for users with unlimited credits
+    if (this.hasUnlimitedCredits) {
+        return this;
+    }
+    
     if (this.flashcardCredits < amount) {
         throw new Error('Insufficient credits');
     }

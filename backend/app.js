@@ -8,6 +8,9 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust proxy for rate limiting (needed when behind reverse proxy)
+app.set('trust proxy', process.env.NODE_ENV === 'production' ? 1 : false);
+
 // Security middleware
 app.use(helmet());
 app.use(cors({

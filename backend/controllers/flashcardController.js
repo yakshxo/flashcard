@@ -1,6 +1,6 @@
 const Flashcard = require('../models/Flashcard');
 const User = require('../models/User');
-const { generateFlashcards } = require('../services/openaiService');
+const { generateFlashcards } = require('../services/aiService');
 const { validationResult } = require('express-validator');
 const pdfParse = require('pdf-parse');
 
@@ -29,9 +29,9 @@ const generateFromText = async (req, res) => {
             customPrompt
         } = req.body;
 
-        // Check if user has enough credits
+        // Check if user has enough credits (skip for unlimited users)
         const creditsNeeded = Math.ceil(cardCount / 10); // 1 credit per 10 cards
-        if (req.user.flashcardCredits < creditsNeeded) {
+        if (!req.user.hasUnlimitedCredits && req.user.flashcardCredits < creditsNeeded) {
             return res.status(402).json({
                 success: false,
                 message: `Insufficient credits. Need ${creditsNeeded}, have ${req.user.flashcardCredits}`,
@@ -55,7 +55,7 @@ const generateFromText = async (req, res) => {
             status: 'generating'
         });
 
-        // Generate flashcards using OpenAI in background
+        // Generate flashcards using AI service in background
         try {
             const generatedCards = await generateFlashcards(content, {
                 cardCount,
@@ -79,8 +79,8 @@ const generateFromText = async (req, res) => {
                 message: 'Flashcards generated successfully',
                 data: {
                     flashcardSet,
-                    creditsUsed: creditsNeeded,
-                    remainingCredits: req.user.flashcardCredits - creditsNeeded
+                    creditsUsed: req.user.hasUnlimitedCredits ? 0 : creditsNeeded,
+                    remainingCredits: req.user.hasUnlimitedCredits ? 999999 : (req.user.flashcardCredits - creditsNeeded)
                 }
             });
 
@@ -146,9 +146,9 @@ const generateFromFile = async (req, res) => {
             });
         }
 
-        // Check credits
+        // Check credits (skip for unlimited users)
         const creditsNeeded = Math.ceil(parseInt(cardCount) / 10);
-        if (req.user.flashcardCredits < creditsNeeded) {
+        if (!req.user.hasUnlimitedCredits && req.user.flashcardCredits < creditsNeeded) {
             return res.status(402).json({
                 success: false,
                 message: `Insufficient credits. Need ${creditsNeeded}, have ${req.user.flashcardCredits}`,
@@ -202,8 +202,8 @@ const generateFromFile = async (req, res) => {
                 message: 'Flashcards generated successfully from file',
                 data: {
                     flashcardSet,
-                    creditsUsed: creditsNeeded,
-                    remainingCredits: req.user.flashcardCredits - creditsNeeded
+                    creditsUsed: req.user.hasUnlimitedCredits ? 0 : creditsNeeded,
+                    remainingCredits: req.user.hasUnlimitedCredits ? 999999 : (req.user.flashcardCredits - creditsNeeded)
                 }
             });
 
