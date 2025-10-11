@@ -1,6 +1,9 @@
 node_modules/
 package-lock.json
 backend/.env
+frontend/.env
+frontend/.env.local
+frontend/.env.production
 backend/backend.log
 build/
 

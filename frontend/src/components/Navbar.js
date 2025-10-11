@@ -92,7 +92,7 @@ function Navbar({ user, logout }) {
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center overflow-hidden">
                   {user.profileImage ? (
                     <img 
-                      src={`http://localhost:3001${user.profileImage}`} 
+                      src={`${process.env.REACT_APP_API_URL || 'http://localhost:3001'}${user.profileImage}`}
                       alt="Profile" 
                       className="w-full h-full object-cover"
                     />
