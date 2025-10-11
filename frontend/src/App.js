@@ -12,6 +12,7 @@ import FlashcardViewer from './components/FlashcardViewer';
 import BuyCredits from './components/BuyCredits';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ProfileManagement from './components/ProfileManagement';
 
 // Configure axios defaults
 axios.defaults.baseURL = 'http://localhost:3001';
@@ -67,6 +68,10 @@ function App() {
     }));
   };
 
+  const handleProfileUpdate = (updatedUser) => {
+    setUser(updatedUser);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -110,6 +115,10 @@ function App() {
             path="/buy-credits" 
             element={user ? <BuyCredits user={user} onCreditsUpdated={updateUserCredits} /> : <Navigate to="/login" />} 
           />
+          <Route 
+            path="/profile" 
+            element={user ? <ProfileManagement user={user} onUpdate={handleProfileUpdate} /> : <Navigate to="/login" />} 
+          />
           
           {/* Default redirect */}
           <Route 
@@ -117,6 +126,7 @@ function App() {
             element={<Navigate to={user ? "/dashboard" : "/login"} />} 
           />
         </Routes>
+        
         
         {/* Footer - only show when user is logged in */}
         {user && <Footer />}

@@ -70,8 +70,45 @@ const validateFlashcardGeneration = [
         .withMessage('Custom prompt cannot exceed 1000 characters')
 ];
 
+// Validation rules for OTP verification
+const validateOTP = [
+    body('email')
+        .trim()
+        .isEmail()
+        .withMessage('Please provide a valid email')
+        .normalizeEmail(),
+    
+    body('otp')
+        .trim()
+        .isLength({ min: 4, max: 4 })
+        .withMessage('OTP must be exactly 4 digits')
+        .isNumeric()
+        .withMessage('OTP must contain only numbers'),
+    
+    body('isLogin')
+        .optional()
+        .isBoolean()
+        .withMessage('isLogin must be a boolean')
+];
+
+// Validation rules for email only
+const validateEmail = [
+    body('email')
+        .trim()
+        .isEmail()
+        .withMessage('Please provide a valid email')
+        .normalizeEmail(),
+    
+    body('isLogin')
+        .optional()
+        .isBoolean()
+        .withMessage('isLogin must be a boolean')
+];
+
 module.exports = {
     validateRegister,
     validateLogin,
-    validateFlashcardGeneration
+    validateFlashcardGeneration,
+    validateOTP,
+    validateEmail
 };

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -50,10 +51,14 @@ app.get('/api/health', (req, res) => {
     });
 });
 
+// Static file serving for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/flashcards', require('./routes/flashcards'));
 app.use('/api/payments', require('./routes/payments'));
+app.use('/api/profile', require('./routes/profile'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -69,8 +74,19 @@ app.use('*', (req, res) => {
     res.status(404).json({ message: 'Route not found' });
 });
 
+// Test email service on startup
+const { testEmailConnection } = require('./services/emailService');
+
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`🚀 Server is running on port ${PORT}`);
     console.log(`🌐 Environment: ${process.env.NODE_ENV}`);
+    
+    // Test email configuration
+    console.log('\n📧 Testing email service...');
+    const emailTest = await testEmailConnection();
+    if (!emailTest.success) {
+        console.log('⚠️  Email service not configured properly. OTP emails will not work.');
+        console.log(`   Error: ${emailTest.error}`);
+    }
 });

@@ -81,8 +81,68 @@ const uploadMiddleware = (req, res, next) => {
     });
 };
 
+// Profile picture upload configuration
+const fs = require('fs');
+
+// Create profiles upload directory
+const profilesDir = path.join(__dirname, '../uploads/profiles');
+if (!fs.existsSync(profilesDir)) {
+    fs.mkdirSync(profilesDir, { recursive: true });
+}
+
+// Storage for profile pictures
+const profileStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, profilesDir);
+    },
+    filename: function (req, file, cb) {
+        // Create unique filename: userId_timestamp.extension
+        const uniqueName = `${req.user.id}_${Date.now()}${path.extname(file.originalname)}`;
+        cb(null, uniqueName);
+    }
+});
+
+// File filter for profile images
+const profileImageFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only image files are allowed for profile pictures!'), false);
+    }
+};
+
+// Configure profile picture upload
+const profileUpload = multer({
+    storage: profileStorage,
+    limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit
+        files: 1
+    },
+    fileFilter: profileImageFilter
+});
+
+// Middleware for profile picture upload
+const uploadProfilePicture = profileUpload.single('profileImage');
+
+// Helper function to delete old profile picture
+const deleteOldProfilePicture = (filePath) => {
+    if (filePath) {
+        const fullPath = path.join(__dirname, '../', filePath);
+        if (fs.existsSync(fullPath)) {
+            try {
+                fs.unlinkSync(fullPath);
+                console.log('Deleted old profile picture:', fullPath);
+            } catch (error) {
+                console.error('Error deleting old profile picture:', error);
+            }
+        }
+    }
+};
+
 module.exports = {
     uploadMiddleware,
     uploadSingle,
-    handleUploadError
+    handleUploadError,
+    uploadProfilePicture,
+    deleteOldProfilePicture
 };

@@ -51,6 +51,44 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    profileImage: {
+        type: String,
+        default: null
+    },
+    birthDate: {
+        type: Date,
+        default: null
+    },
+    schoolName: {
+        type: String,
+        trim: true,
+        maxlength: [100, 'School name cannot exceed 100 characters'],
+        default: null
+    },
+    phoneNumber: {
+        type: String,
+        trim: true,
+        validate: {
+            validator: function(v) {
+                if (!v) return true; // Allow empty phone numbers
+                return /^[\+]?[1-9][\d]{0,15}$/.test(v); // Basic international phone format
+            },
+            message: 'Please enter a valid phone number'
+        },
+        default: null
+    },
+    otp: {
+        type: String,
+        select: false
+    },
+    otpExpiry: {
+        type: Date,
+        select: false
+    },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     createdAt: {
@@ -103,6 +141,39 @@ userSchema.methods.deductCredits = async function(amount) {
 userSchema.methods.addCredits = async function(amount) {
     this.flashcardCredits += amount;
     return await this.save();
+};
+
+// Generate OTP for email verification
+userSchema.methods.generateOTP = function() {
+    // Generate 4-digit OTP
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    
+    // Set OTP and expiry (10 minutes from now)
+    this.otp = otp;
+    this.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    
+    return otp;
+};
+
+// Verify OTP
+userSchema.methods.verifyOTP = function(enteredOTP) {
+    // Check if OTP exists and hasn't expired
+    if (!this.otp || !this.otpExpiry) {
+        return false;
+    }
+    
+    if (this.otpExpiry < new Date()) {
+        return false;
+    }
+    
+    return this.otp === enteredOTP;
+};
+
+// Clear OTP after verification
+userSchema.methods.clearOTP = function() {
+    this.otp = undefined;
+    this.otpExpiry = undefined;
+    this.isVerified = true;
 };
 
 module.exports = mongoose.model('User', userSchema);

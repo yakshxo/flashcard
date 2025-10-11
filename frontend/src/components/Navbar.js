@@ -1,11 +1,32 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { ChevronDown, User, Settings, LogOut } from 'lucide-react';
 
 function Navbar({ user, logout }) {
   const location = useLocation();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef();
 
   const isActive = (path) => {
     return location.pathname === path;
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const getInitials = (name) => {
+    return name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U';
   };
 
   return (
@@ -63,19 +84,74 @@ function Navbar({ user, logout }) {
               </div>
             </Link>
             
-            <div className="flex items-center space-x-3 bg-gray-50 px-4 py-2 rounded-2xl">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">{user.name.charAt(0).toUpperCase()}</span>
-              </div>
-              <span className="font-medium text-gray-700">Hey, {user.name}!</span>
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="flex items-center space-x-3 bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-2xl transition-all duration-200 group"
+              >
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center overflow-hidden">
+                  {user.profileImage ? (
+                    <img 
+                      src={`http://localhost:3001${user.profileImage}`} 
+                      alt="Profile" 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-white font-bold text-sm">{getInitials(user.name)}</span>
+                  )}
+                </div>
+                <span className="font-medium text-gray-700">Hey, {user.name}!</span>
+                <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+                  showDropdown ? 'rotate-180' : ''
+                }`} />
+              </button>
+              
+              {showDropdown && (
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <p className="text-sm font-semibold text-gray-800">{user.name}</p>
+                    <p className="text-sm text-gray-600">{user.email}</p>
+                    <div className="flex items-center mt-2">
+                      <span className="text-xs text-gray-500">Credits:</span>
+                      <span className="ml-2 px-2 py-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold rounded-full">
+                        {user.hasUnlimitedCredits ? '∞' : user.flashcardCredits}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="py-2">
+                    <Link
+                      to="/profile"
+                      onClick={() => setShowDropdown(false)}
+                      className="w-full px-4 py-3 text-left flex items-center space-x-3 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                    >
+                      <User className="h-4 w-4" />
+                      <span className="font-medium">Manage Profile</span>
+                    </Link>
+                    
+                    <Link
+                      to="/buy-credits"
+                      onClick={() => setShowDropdown(false)}
+                      className="w-full px-4 py-3 text-left flex items-center space-x-3 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                    >
+                      <Settings className="h-4 w-4" />
+                      <span className="font-medium">Buy Credits</span>
+                    </Link>
+                    
+                    <button
+                      onClick={() => {
+                        setShowDropdown(false);
+                        logout();
+                      }}
+                      className="w-full px-4 py-3 text-left flex items-center space-x-3 hover:bg-red-50 transition-colors duration-200 text-red-600 hover:text-red-700"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span className="font-medium">Sign Out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-            
-            <button
-              onClick={logout}
-              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-2 rounded-2xl font-semibold transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
-            >
-              Logout
-            </button>
           </div>
         </div>
       </div>
