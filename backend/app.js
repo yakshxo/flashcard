@@ -13,13 +13,38 @@ const PORT = process.env.PORT || 3001;
 app.set('trust proxy', process.env.NODE_ENV === 'production' ? 1 : false);
 
 // Security middleware
-app.use(helmet());
-app.use(cors({
-    origin: process.env.NODE_ENV === 'production' 
-        ? process.env.FRONTEND_URL 
-        : ['http://localhost:3000'],
-    credentials: true
-}));
+// Exact origins you accept (no trailing slashes)
+const allowedOrigins = [
+    process.env.FRONTEND_URL,            // e.g. "https://flaschard.vercel.app"
+    'http://localhost:3000',
+    // Optional: allow all vercel preview URLs for your app
+    // use a function check below instead of listing them all
+  ].filter(Boolean);
+  
+  const corsOptions = {
+    origin: (origin, cb) => {
+      // Allow non-browser tools (no origin)
+      if (!origin) return cb(null, true);
+  
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        // allow *.vercel.app previews if you want:
+        /\.vercel\.app$/.test(new URL(origin).host);
+  
+      return cb(isAllowed ? null : new Error('Not allowed by CORS'), isAllowed);
+    },
+    credentials: true,
+    methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type','Authorization','X-Requested-With'],
+    optionsSuccessStatus: 204, // default, fine
+  };
+  
+  app.use(cors(corsOptions));
+  // Ensure preflight hits CORS
+  app.options('*', cors(corsOptions));
+  
+  // Security headers AFTER CORS
+  app.use(helmet());
 
 // Rate limiting
 const limiter = rateLimit({
