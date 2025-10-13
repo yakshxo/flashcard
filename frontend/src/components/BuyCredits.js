@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { CreditCard, Check, Sparkles, Zap, Crown, Star } from 'lucide-react';
@@ -6,11 +6,6 @@ import { CreditCard, Check, Sparkles, Zap, Crown, Star } from 'lucide-react';
 const BuyCredits = ({ user, onCreditsUpdated }) => {
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchPackages();
-    handlePaymentReturn();
-  }, []);
 
   const fetchPackages = async () => {
     try {
@@ -24,7 +19,7 @@ const BuyCredits = ({ user, onCreditsUpdated }) => {
     }
   };
 
-  const handlePaymentReturn = async () => {
+  const handlePaymentReturn = useCallback(async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
     const sessionId = urlParams.get('session_id');
@@ -53,7 +48,12 @@ const BuyCredits = ({ user, onCreditsUpdated }) => {
       // Clean up URL
       window.history.replaceState({}, document.title, '/buy-credits');
     }
-  };
+  }, [onCreditsUpdated]);
+
+  useEffect(() => {
+    fetchPackages();
+    handlePaymentReturn();
+  }, [handlePaymentReturn]);
 
   const handlePackageSelect = async (pkg) => {
     try {
