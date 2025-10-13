@@ -74,24 +74,17 @@ Make sure the response is valid JSON with exactly ${cardCount} flashcards.`;
         // Try to parse the JSON response
         let flashcards;
         try {
-            // First try to parse as direct JSON
             flashcards = JSON.parse(flashcardText);
         } catch (parseError) {
-            console.log('Direct JSON parse failed, extracting JSON array from response');
+            console.error('Failed to parse Hugging Face response as JSON:', parseError);
+            console.error('Hugging Face response:', flashcardText);
             
             // Fallback: try to extract JSON from the response
             const jsonMatch = flashcardText.match(/\[[\s\S]*\]/);
             if (jsonMatch) {
-                try {
-                    flashcards = JSON.parse(jsonMatch[0]);
-                } catch (secondParseError) {
-                    console.error('Failed to parse extracted JSON:', secondParseError);
-                    console.error('Extracted content:', jsonMatch[0]);
-                    throw new Error('Hugging Face response contains invalid JSON format');
-                }
+                flashcards = JSON.parse(jsonMatch[0]);
             } else {
-                console.error('No JSON array found in response:', flashcardText);
-                throw new Error('Hugging Face response does not contain a JSON array');
+                throw new Error('Hugging Face response is not valid JSON format');
             }
         }
 

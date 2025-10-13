@@ -11,9 +11,7 @@ import {
     Edit3, 
     Save, 
     X, 
-    Upload,
-    Trash2,
-    Shield
+    Trash2
 } from 'lucide-react';
 import OTPVerification from './OTPVerification';
 
