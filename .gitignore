@@ -1,8 +1,45 @@
+# Dependencies
 node_modules/
 package-lock.json
+
+# Environment variables
 backend/.env
+.env
+
+# Logs
 backend/backend.log
+*.log
+npm-debug.log*
+
+# Build outputs
 build/
+dist/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp
+
+# Uploads and user content
+uploads/
+payment/
 
 # Local Netlify folder
 .netlify
+
+# Cache directories
+.cache/

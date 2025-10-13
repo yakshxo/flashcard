@@ -56,7 +56,7 @@ const ProfileManagement = ({ user, onUpdate }) => {
                     phoneNumber: userData.phoneNumber || ''
                 });
                 if (userData.profileImage) {
-                    setImagePreview(`http://localhost:3001${userData.profileImage}`);
+                    setImagePreview(`${process.env.REACT_APP_API_URL || 'http://localhost:3001'}${userData.profileImage}`);
                 }
             }
         } catch (error) {
@@ -109,7 +109,7 @@ const ProfileManagement = ({ user, onUpdate }) => {
         } catch (error) {
             console.error('Error uploading image:', error);
             toast.error(error.response?.data?.message || 'Failed to upload image');
-            setImagePreview(profile.profileImage ? `http://localhost:3001${profile.profileImage}` : null);
+            setImagePreview(profile.profileImage ? `${process.env.REACT_APP_API_URL || 'http://localhost:3001'}${profile.profileImage}` : null);
         } finally {
             setUploadingImage(false);
         }
