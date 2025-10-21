@@ -35,7 +35,7 @@ app.use(cors({
         }
         
         // Allow all Vercel preview deployments in production
-        if (process.env.NODE_ENV === 'production' && origin && origin.match(/^https:\/\/flas[ch]ard-.*\.vercel\.app$/)) {
+        if (process.env.NODE_ENV === 'production' && origin && origin.match(/^https:\/\/flas(h)?c(h)?ard-.*\.vercel\.app$/)) {
             return callback(null, true);
         }
         
