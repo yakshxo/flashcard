@@ -16,7 +16,14 @@ app.set('trust proxy', 1);
 app.use(helmet());
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
-        ? [process.env.FRONTEND_URL, 'https://flaschard.vercel.app', 'http://localhost:3000'] 
+        ? [
+            process.env.FRONTEND_URL,
+            'https://flaschard.vercel.app',
+            'https://flashcard-git-main-yakshs-projects-774287b7.vercel.app',
+            'https://flashcard-q397rt7m2-yakshs-projects-774287b7.vercel.app',
+            /^https:\/\/flashcard-.*\.vercel\.app$/,  // Allow all Vercel preview deployments
+            'http://localhost:3000'
+        ] 
         : ['http://localhost:3000', 'http://localhost:3001'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
