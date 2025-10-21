@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import OTPVerification from './OTPVerification';
 
 function Register({ onLogin }) {
   const [formData, setFormData] = useState({
@@ -12,8 +11,6 @@ function Register({ onLogin }) {
     confirmPassword: ''
   });
   const [loading, setLoading] = useState(false);
-  const [showOTP, setShowOTP] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
 
   const handleChange = (e) => {
     setFormData({
@@ -39,16 +36,10 @@ function Register({ onLogin }) {
         password: formData.password
       });
       
-      if (response.data.success && response.data.data.otpSent) {
-        // OTP sent, show verification screen
-        setUserEmail(formData.email);
-        setShowOTP(true);
-        toast.success(response.data.message);
-      } else if (response.data.success) {
-        // Direct registration (fallback)
+      if (response.data.success) {
         const { token, user } = response.data.data;
         onLogin(token, user);
-        toast.success('Account created successfully!');
+        toast.success(response.data.message);
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -65,28 +56,6 @@ function Register({ onLogin }) {
       setLoading(false);
     }
   };
-
-  const handleOTPSuccess = (data) => {
-    const { token, user } = data;
-    onLogin(token, user);
-  };
-
-  const handleBackToRegister = () => {
-    setShowOTP(false);
-    setUserEmail('');
-  };
-
-  // Show OTP verification screen if needed
-  if (showOTP) {
-    return (
-      <OTPVerification
-        email={userEmail}
-        isLogin={false}
-        onSuccess={handleOTPSuccess}
-        onBack={handleBackToRegister}
-      />
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 py-12 px-4 sm:px-6 lg:px-8">

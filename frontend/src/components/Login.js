@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import OTPVerification from './OTPVerification';
 
 function Login({ onLogin }) {
   const [formData, setFormData] = useState({
@@ -10,8 +9,6 @@ function Login({ onLogin }) {
     password: ''
   });
   const [loading, setLoading] = useState(false);
-  const [showOTP, setShowOTP] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
 
   const handleChange = (e) => {
     setFormData({
@@ -27,15 +24,10 @@ function Login({ onLogin }) {
     try {
       const response = await axios.post('/api/auth/login', formData);
       
-      if (response.data.success && response.data.data.otpSent) {
-        // OTP sent, show verification screen
-        setUserEmail(formData.email);
-        setShowOTP(true);
-        toast.success(response.data.message);
-      } else if (response.data.success) {
-        // Direct login (fallback)
+      if (response.data.success) {
         const { token, user } = response.data.data;
         onLogin(token, user);
+        toast.success(response.data.message);
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -44,28 +36,6 @@ function Login({ onLogin }) {
       setLoading(false);
     }
   };
-
-  const handleOTPSuccess = (data) => {
-    const { token, user } = data;
-    onLogin(token, user);
-  };
-
-  const handleBackToLogin = () => {
-    setShowOTP(false);
-    setUserEmail('');
-  };
-
-  // Show OTP verification screen if needed
-  if (showOTP) {
-    return (
-      <OTPVerification
-        email={userEmail}
-        isLogin={true}
-        onSuccess={handleOTPSuccess}
-        onBack={handleBackToLogin}
-      />
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 py-12 px-4 sm:px-6 lg:px-8">

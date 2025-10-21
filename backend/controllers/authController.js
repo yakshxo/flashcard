@@ -10,7 +10,7 @@ const generateToken = (id) => {
     });
 };
 
-// @desc    Register user (send OTP)
+// @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
 const register = async (req, res) => {
@@ -29,7 +29,7 @@ const register = async (req, res) => {
 
         // Check if user already exists
         let user = await User.findOne({ email });
-        if (user && user.isVerified) {
+        if (user) {
             return res.status(400).json({
                 success: false,
                 message: 'User with this email already exists'
@@ -40,46 +40,42 @@ const register = async (req, res) => {
         const developerEmails = ['yakshthakar24@gmail.com', 'harshilv3034@gmail.com'];
         const isDeveloper = developerEmails.includes(email.toLowerCase());
         
-        // If user exists but not verified, update their info
-        if (user && !user.isVerified) {
-            user.name = name;
-            user.password = password;
-            user.flashcardCredits = isDeveloper ? 999999 : 5;
-            user.isDeveloper = isDeveloper;
-            user.hasUnlimitedCredits = isDeveloper;
-        } else {
-            // Create new user
-            user = await User.create({
-                name,
-                email,
-                password,
-                flashcardCredits: isDeveloper ? 999999 : 5,
-                isDeveloper: isDeveloper,
-                hasUnlimitedCredits: isDeveloper,
-                isVerified: false
-            });
+        // Create new user
+        user = await User.create({
+            name,
+            email,
+            password,
+            flashcardCredits: isDeveloper ? 999999 : 5,
+            isDeveloper: isDeveloper,
+            hasUnlimitedCredits: isDeveloper,
+            isVerified: true
+        });
+
+        // Send welcome email
+        const welcomeEmailResult = await sendWelcomeEmail(user.email, user.name);
+        if (!welcomeEmailResult.success) {
+            console.error('Failed to send welcome email:', welcomeEmailResult.error);
         }
 
-        // Generate and send OTP
-        const otp = user.generateOTP();
-        await user.save();
-        
-        // Send OTP email
-        const emailResult = await sendOTPEmail(email, otp, name, false);
-        if (!emailResult.success) {
-            console.error('Failed to send OTP email:', emailResult.error);
-            return res.status(500).json({
-                success: false,
-                message: 'Failed to send verification email. Please try again.'
-            });
-        }
+        // Generate token
+        const token = generateToken(user._id);
 
-        res.status(200).json({
+        res.status(201).json({
             success: true,
-            message: 'Verification code sent to your email. Please check your inbox.',
+            message: 'Account created successfully',
             data: {
-                email: user.email,
-                otpSent: true
+                token,
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    flashcardCredits: user.flashcardCredits,
+                    subscriptionStatus: user.subscriptionStatus,
+                    totalFlashcardsGenerated: user.totalFlashcardsGenerated,
+                    isDeveloper: user.isDeveloper,
+                    hasUnlimitedCredits: user.hasUnlimitedCredits,
+                    isVerified: user.isVerified
+                }
             }
         });
 
@@ -93,7 +89,7 @@ const register = async (req, res) => {
     }
 };
 
-// @desc    Login user (send OTP)
+// @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
 const login = async (req, res) => {
@@ -119,14 +115,6 @@ const login = async (req, res) => {
             });
         }
 
-        // Check if user is verified
-        if (!user.isVerified) {
-            return res.status(401).json({
-                success: false,
-                message: 'Please verify your email first. Check your inbox for the verification code.'
-            });
-        }
-
         // Check password
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
@@ -136,26 +124,25 @@ const login = async (req, res) => {
             });
         }
 
-        // Generate and send OTP for login verification
-        const otp = user.generateOTP();
-        await user.save();
-        
-        // Send OTP email
-        const emailResult = await sendOTPEmail(email, otp, user.name, true);
-        if (!emailResult.success) {
-            console.error('Failed to send login OTP email:', emailResult.error);
-            return res.status(500).json({
-                success: false,
-                message: 'Failed to send verification email. Please try again.'
-            });
-        }
+        // Generate token
+        const token = generateToken(user._id);
 
         res.status(200).json({
             success: true,
-            message: 'Verification code sent to your email. Please check your inbox to complete login.',
+            message: 'Login successful',
             data: {
-                email: user.email,
-                otpSent: true
+                token,
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    flashcardCredits: user.flashcardCredits,
+                    subscriptionStatus: user.subscriptionStatus,
+                    totalFlashcardsGenerated: user.totalFlashcardsGenerated,
+                    isDeveloper: user.isDeveloper,
+                    hasUnlimitedCredits: user.hasUnlimitedCredits,
+                    isVerified: user.isVerified
+                }
             }
         });
 
