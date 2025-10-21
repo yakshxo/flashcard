@@ -101,19 +101,8 @@ app.use('*', (req, res) => {
     res.status(404).json({ message: 'Route not found' });
 });
 
-// Test email service on startup
-const { testEmailConnection } = require('./services/emailService');
-
 // Start server
-app.listen(PORT, async () => {
+app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
     console.log(`🌐 Environment: ${process.env.NODE_ENV}`);
-    
-    // Test email configuration
-    console.log('\n📧 Testing email service...');
-    const emailTest = await testEmailConnection();
-    if (!emailTest.success) {
-        console.log('⚠️  Email service not configured properly. OTP emails will not work.');
-        console.log(`   Error: ${emailTest.error}`);
-    }
 });
