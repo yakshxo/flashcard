@@ -24,6 +24,8 @@ app.use(cors({
             ]
             : ['http://localhost:3000', 'http://localhost:3001'];
         
+        console.log('Request from origin:', origin);
+        
         // Allow requests with no origin (mobile apps, Postman, etc.)
         if (!origin) return callback(null, true);
         
@@ -33,7 +35,7 @@ app.use(cors({
         }
         
         // Allow all Vercel preview deployments in production
-        if (process.env.NODE_ENV === 'production' && origin.match(/^https:\/\/flashcard-.*\.vercel\.app$/)) {
+        if (process.env.NODE_ENV === 'production' && origin && origin.match(/^https:\/\/flas[ch]ard-.*\.vercel\.app$/)) {
             return callback(null, true);
         }
         
