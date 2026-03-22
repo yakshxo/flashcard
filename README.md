@@ -359,8 +359,8 @@ For support, feature requests, or bug reports, please create an issue in the Git
 
 ## Developers
 
-**Harshil Lotwala** - Lead Developer  
-**Yaksh Thakar** - Co-Developer
+**Harshil Lotwala** - Developer  
+**Yaksh Thakar** - Developer
 
 ## Acknowledgments
 
