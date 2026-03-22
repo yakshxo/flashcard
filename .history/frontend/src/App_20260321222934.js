@@ -15,7 +15,7 @@ import Footer from './components/Footer';
 import ProfileManagement from './components/ProfileManagement';
 
 // Configure axios defaults
-axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 function App() {
   const [user, setUser] = useState(null);
