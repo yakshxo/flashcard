@@ -54,7 +54,7 @@ Make sure the response is valid JSON with exactly ${cardCount} flashcards.`;
 
         const response = await client.chatCompletion({
             provider: "fireworks-ai",
-            model: "meta-llama/Llama-3.1-8B-Instruct",
+            model: "mistralai/Mistral-7B-Instruct-v0.2",
             messages: [
                 {
                     role: 'system',
