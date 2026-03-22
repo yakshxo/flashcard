@@ -1,168 +1,203 @@
 const { InferenceClient } = require('@huggingface/inference');
 
-// Initialize Hugging Face client
 const client = new InferenceClient(process.env.HF_TOKEN);
+
+// Use env vars so you can switch models/providers without editing code
+const HF_MODEL =
+  process.env.HF_MODEL || 'meta-llama/Llama-3.1-8B-Instruct';
+
+const HF_PROVIDER =
+  process.env.HF_PROVIDER || 'auto';
+
+// Small helper to safely extract model text
+const getMessageContent = (response) => {
+  return response?.choices?.[0]?.message?.content?.trim() || '';
+};
+
+/**
+ * Parse JSON array from model output
+ */
+const parseFlashcardsJson = (text) => {
+  try {
+    return JSON.parse(text);
+  } catch {
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      throw new Error('Model response does not contain a JSON array');
+    }
+    return JSON.parse(jsonMatch[0]);
+  }
+};
 
 /**
  * Generate flashcards from text content using Hugging Face
- * @param {string} content - The text content to generate flashcards from
- * @param {object} options - Generation options
- * @returns {Promise<Array>} - Array of flashcard objects
+ * @param {string} content
+ * @param {object} options
+ * @returns {Promise<Array>}
  */
 const generateFlashcards = async (content, options = {}) => {
-    try {
-        const {
-            cardCount = 10,
-            difficulty = 'medium',
-            subject = '',
-            customPrompt = ''
-        } = options;
+  try {
+    const {
+      cardCount = 10,
+      difficulty = 'medium',
+      subject = '',
+      customPrompt = '',
+    } = options;
 
-        // Build the prompt based on options
-        let prompt = `You are an expert educator creating flashcards. Generate ${cardCount} high-quality flashcards from the following content.
+    if (!content || !content.trim()) {
+      throw new Error('No study content provided');
+    }
+
+    let prompt = `You are an expert educator. Generate exactly ${cardCount} flashcards from the study content below.
 
 Requirements:
-- Create exactly ${cardCount} flashcards
+- Return ONLY valid JSON
+- Return exactly ${cardCount} flashcards
 - Difficulty level: ${difficulty}
-- Each flashcard should have a clear question and a comprehensive answer
-- Focus on key concepts, definitions, and important facts
-- Make questions specific and answers informative
-- Avoid overly simple yes/no questions
-- Include diverse question types (what, how, why, when, etc.)`;
+- Each flashcard must have:
+  - question
+  - answer
+  - difficulty
+  - tags
+- Questions should be specific and useful for revision
+- Answers should be concise but complete
+- Use different question styles where appropriate
+- Avoid yes/no questions unless absolutely necessary`;
 
-        if (subject) {
-            prompt += `\n- Subject focus: ${subject}`;
-        }
+    if (subject) {
+      prompt += `\n- Subject focus: ${subject}`;
+    }
 
-        if (customPrompt) {
-            prompt += `\n- Additional instructions: ${customPrompt}`;
-        }
+    if (customPrompt) {
+      prompt += `\n- Additional instructions: ${customPrompt}`;
+    }
 
-        prompt += `\n\nContent to study:\n${content}
+    prompt += `
 
-Please respond with a JSON array of flashcards in this exact format:
+Study content:
+${content}
+
+Return this exact JSON shape:
 [
   {
-    "question": "Your question here",
-    "answer": "Your detailed answer here",
+    "question": "Question here",
+    "answer": "Answer here",
     "difficulty": "${difficulty}",
     "tags": ["tag1", "tag2"]
   }
-]
+]`;
 
-Make sure the response is valid JSON with exactly ${cardCount} flashcards.`;
+    const response = await client.chatCompletion({
+      provider: HF_PROVIDER, // "auto" is safest
+      model: HF_MODEL,
+      messages: [
+        {
+          role: 'system',
+          content:
+            'You create educational flashcards. Respond with only valid JSON. No markdown. No explanation.',
+        },
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      max_tokens: 3000,
+      temperature: 0.4,
+    });
 
-        const response = await client.chatCompletion({
-            provider: "fireworks-ai",
-            model: "mistralai/Mistral-7B-Instruct-v0.2",
-            messages: [
-                {
-                    role: 'system',
-                    content: 'You are an expert educator who creates high-quality educational flashcards. Always respond with valid JSON format.'
-                },
-                {
-                    role: 'user',
-                    content: prompt
-                }
-            ],
-            max_tokens: 4000,
-            temperature: 0.7
-        });
+    const rawText = getMessageContent(response);
 
-        const flashcardText = response.choices[0].message.content.trim();
-        
-        // Try to parse the JSON response
-        let flashcards;
-        try {
-            // First try to parse as direct JSON
-            flashcards = JSON.parse(flashcardText);
-        } catch (parseError) {
-            console.log('Direct JSON parse failed, extracting JSON array from response');
-            
-            // Fallback: try to extract JSON from the response
-            const jsonMatch = flashcardText.match(/\[[\s\S]*\]/);
-            if (jsonMatch) {
-                try {
-                    flashcards = JSON.parse(jsonMatch[0]);
-                } catch (secondParseError) {
-                    console.error('Failed to parse extracted JSON:', secondParseError);
-                    console.error('Extracted content:', jsonMatch[0]);
-                    throw new Error('Hugging Face response contains invalid JSON format');
-                }
-            } else {
-                console.error('No JSON array found in response:', flashcardText);
-                throw new Error('Hugging Face response does not contain a JSON array');
-            }
-        }
-
-        // Validate the response structure
-        if (!Array.isArray(flashcards)) {
-            throw new Error('Hugging Face response is not an array');
-        }
-
-        // Ensure each flashcard has required fields
-        const validatedFlashcards = flashcards.map((card, index) => {
-            if (!card.question || !card.answer) {
-                throw new Error(`Flashcard ${index + 1} is missing question or answer`);
-            }
-
-            return {
-                question: card.question.trim(),
-                answer: card.answer.trim(),
-                difficulty: card.difficulty || difficulty,
-                tags: Array.isArray(card.tags) ? card.tags : []
-            };
-        });
-
-        // Ensure we have the right number of cards
-        if (validatedFlashcards.length !== cardCount) {
-            console.warn(`Expected ${cardCount} flashcards, got ${validatedFlashcards.length}`);
-        }
-
-        return validatedFlashcards.slice(0, cardCount); // Take only the requested number
-
-    } catch (error) {
-        console.error('Hugging Face Service Error:', error);
-        
-        // Provide more specific error messages
-        if (error.message.includes('API key')) {
-            throw new Error('Invalid Hugging Face API token.');
-        } else if (error.message.includes('quota') || error.message.includes('rate limit')) {
-            throw new Error('Hugging Face API rate limit exceeded. Please try again later.');
-        } else if (error.message.includes('JSON')) {
-            throw new Error('Failed to generate properly formatted flashcards. Please try again.');
-        }
-        
-        throw new Error(`Failed to generate flashcards: ${error.message}`);
+    if (!rawText) {
+      throw new Error('Empty response from Hugging Face');
     }
+
+    const flashcards = parseFlashcardsJson(rawText);
+
+    if (!Array.isArray(flashcards)) {
+      throw new Error('Model response is not an array');
+    }
+
+    const validatedFlashcards = flashcards.map((card, index) => {
+      if (!card?.question || !card?.answer) {
+        throw new Error(`Flashcard ${index + 1} is missing question or answer`);
+      }
+
+      return {
+        question: String(card.question).trim(),
+        answer: String(card.answer).trim(),
+        difficulty: card.difficulty || difficulty,
+        tags: Array.isArray(card.tags)
+          ? card.tags.map((tag) => String(tag).trim()).filter(Boolean)
+          : [],
+      };
+    });
+
+    return validatedFlashcards.slice(0, cardCount);
+  } catch (error) {
+    console.error('Hugging Face Service Error:', error);
+
+    const message = error?.message || 'Unknown Hugging Face error';
+
+    if (message.includes('401') || message.toLowerCase().includes('unauthorized')) {
+      throw new Error('Invalid Hugging Face token.');
+    }
+
+    if (message.includes('403') || message.toLowerCase().includes('forbidden')) {
+      throw new Error('Hugging Face token does not have the required permissions.');
+    }
+
+    if (
+      message.toLowerCase().includes('inference provider') ||
+      message.toLowerCase().includes('provider information')
+    ) {
+      throw new Error(
+        `No working Hugging Face provider was found for model "${HF_MODEL}". Try another model/provider in env vars.`
+      );
+    }
+
+    if (
+      message.toLowerCase().includes('rate limit') ||
+      message.includes('429')
+    ) {
+      throw new Error('Hugging Face rate limit exceeded. Please try again later.');
+    }
+
+    if (message.toLowerCase().includes('json')) {
+      throw new Error('Model returned invalid JSON. Please try again.');
+    }
+
+    throw new Error(`Failed to generate flashcards: ${message}`);
+  }
 };
 
 /**
  * Test Hugging Face connection
- * @returns {Promise<boolean>} - True if connection is successful
+ * @returns {Promise<boolean>}
  */
 const testConnection = async () => {
-    try {
-        const response = await client.chatCompletion({
-            provider: "fireworks-ai",
-            model: "meta-llama/Llama-3.1-8B-Instruct",
-            messages: [
-                {
-                    role: 'user',
-                    content: 'Say "Hello, Hugging Face connection is working!"'
-                }
-            ],
-            max_tokens: 20
-        });
+  try {
+    const response = await client.chatCompletion({
+      provider: HF_PROVIDER,
+      model: HF_MODEL,
+      messages: [
+        {
+          role: 'user',
+          content: 'Reply with exactly this word: HELLO',
+        },
+      ],
+      max_tokens: 10,
+      temperature: 0,
+    });
 
-        return response.choices[0].message.content.includes('Hello');
-    } catch (error) {
-        console.error('Hugging Face connection test failed:', error);
-        return false;
-    }
+    const text = getMessageContent(response);
+    return text.toUpperCase().includes('HELLO');
+  } catch (error) {
+    console.error('Hugging Face connection test failed:', error);
+    return false;
+  }
 };
 
 module.exports = {
-    generateFlashcards,
-    testConnection
+  generateFlashcards,
+  testConnection,
 };
