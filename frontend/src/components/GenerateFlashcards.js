@@ -130,11 +130,11 @@ function GenerateFlashcards({ user }) {
   const creditsNeeded = Math.ceil((activeTab === 'text' ? textForm.cardCount : fileForm.cardCount) / 10);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-6">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900">Generate Flashcards</h2>
+        <div className="bg-white shadow rounded-2xl">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Generate Flashcards</h2>
             <p className="mt-1 text-sm text-gray-600">
               Create flashcards from text content or upload a file. You have {user.flashcardCredits} credits available.
             </p>
@@ -142,10 +142,10 @@ function GenerateFlashcards({ user }) {
 
           {/* Tabs */}
           <div className="border-b border-gray-200">
-            <nav className="-mb-px flex">
+            <nav className="-mb-px grid grid-cols-2">
               <button
                 onClick={() => setActiveTab('text')}
-                className={`py-2 px-4 text-sm font-medium border-b-2 ${
+                className={`py-3 px-3 sm:px-4 text-sm font-medium border-b-2 ${
                   activeTab === 'text'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -155,7 +155,7 @@ function GenerateFlashcards({ user }) {
               </button>
               <button
                 onClick={() => setActiveTab('file')}
-                className={`ml-8 py-2 px-4 text-sm font-medium border-b-2 ${
+                className={`py-3 px-3 sm:px-4 text-sm font-medium border-b-2 ${
                   activeTab === 'file'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -166,11 +166,11 @@ function GenerateFlashcards({ user }) {
             </nav>
           </div>
 
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {/* Credits Info */}
             <div className="mb-6 p-4 bg-blue-50 rounded-md">
               <div className="flex">
-                <div className="ml-3">
+                <div className="w-full">
                   <p className="text-sm text-blue-700">
                     <strong>Credits needed:</strong> {creditsNeeded} credits (1 credit per 10 flashcards)
                   </p>

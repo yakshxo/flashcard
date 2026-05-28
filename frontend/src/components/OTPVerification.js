@@ -130,9 +130,9 @@ const OTPVerification = ({ email, isLogin = false, onSuccess, onBack }) => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
-            <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
+            <div className="max-w-md w-full bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-8 border border-gray-100">
                 {/* Header */}
-                <div className="flex items-center mb-8">
+                <div className="flex items-start sm:items-center mb-8">
                     <button 
                         onClick={onBack}
                         className="mr-4 p-2 hover:bg-gray-100 rounded-full transition-all duration-200 hover:scale-105"
@@ -140,10 +140,10 @@ const OTPVerification = ({ email, isLogin = false, onSuccess, onBack }) => {
                         <ArrowLeft className="h-5 w-5 text-gray-600" />
                     </button>
                     <div className="flex-1 text-center">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-4">
-                            <Shield className="h-8 w-8 text-white" />
+                        <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-4">
+                            <Shield className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
                         </div>
-                        <h2 className="text-2xl font-bold text-gray-800">
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
                             {isLogin ? 'Login Verification' : 'Email Verification'}
                         </h2>
                     </div>
@@ -151,9 +151,9 @@ const OTPVerification = ({ email, isLogin = false, onSuccess, onBack }) => {
 
                 {/* Email info */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center bg-blue-50 rounded-xl px-4 py-3 mb-4">
+                    <div className="inline-flex max-w-full items-center bg-blue-50 rounded-xl px-4 py-3 mb-4">
                         <Mail className="h-5 w-5 text-blue-600 mr-2" />
-                        <span className="text-blue-700 font-medium text-sm">{email}</span>
+                        <span className="text-blue-700 font-medium text-sm break-all">{email}</span>
                     </div>
                     <p className="text-gray-600 text-sm leading-relaxed">
                         We've sent a 4-digit verification code to your email address. 
@@ -163,7 +163,7 @@ const OTPVerification = ({ email, isLogin = false, onSuccess, onBack }) => {
 
                 {/* OTP Input */}
                 <form onSubmit={handleVerify}>
-                    <div className="flex justify-center gap-4 mb-6">
+                    <div className="flex justify-center gap-2 sm:gap-4 mb-6">
                         {otp.map((digit, index) => (
                             <input
                                 key={index}
@@ -175,7 +175,7 @@ const OTPVerification = ({ email, isLogin = false, onSuccess, onBack }) => {
                                 onChange={(e) => handleChange(index, e.target.value)}
                                 onKeyDown={(e) => handleKeyDown(index, e)}
                                 onPaste={handlePaste}
-                                className="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                                className="w-12 h-12 sm:w-14 sm:h-14 text-center text-xl sm:text-2xl font-bold border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
                                 disabled={loading}
                             />
                         ))}
@@ -200,12 +200,12 @@ const OTPVerification = ({ email, isLogin = false, onSuccess, onBack }) => {
                         {loading ? (
                             <>
                                 <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent mr-3"></div>
-                                <span className="text-lg">Verifying...</span>
+                                <span className="text-base sm:text-lg">Verifying...</span>
                             </>
                         ) : (
                             <>
                                 <Check className="h-6 w-6 mr-3" />
-                                <span className="text-lg">Verify Code</span>
+                                <span className="text-base sm:text-lg">Verify Code</span>
                             </>
                         )}
                     </button>

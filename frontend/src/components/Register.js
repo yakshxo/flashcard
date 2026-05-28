@@ -89,14 +89,14 @@ function Register({ onLogin }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
+        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 border border-gray-100">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-6">
-              <span className="text-white font-bold text-2xl">S</span>
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-5 sm:mb-6">
+              <span className="text-white font-bold text-xl sm:text-2xl">S</span>
             </div>
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+            <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
               Join SnapStudy
             </h2>
             <p className="text-gray-600">
@@ -194,16 +194,16 @@ function Register({ onLogin }) {
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent mr-3"></div>
-                  <span className="text-lg">Creating Account...</span>
+                  <span className="text-base sm:text-lg">Creating Account...</span>
                 </>
               ) : (
-                <span className="text-lg">Create Account →</span>
+                <span className="text-base sm:text-lg">Create Account →</span>
               )}
             </button>
           </form>
           
           <div className="text-center mt-6">
-            <div className="inline-flex items-center px-4 py-3 rounded-xl text-sm font-medium bg-gradient-to-r from-green-50 to-blue-50 border border-green-200">
+            <div className="inline-flex items-center flex-wrap justify-center px-4 py-3 rounded-xl text-sm font-medium bg-gradient-to-r from-green-50 to-blue-50 border border-green-200">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
               <span className="text-green-700">Get 5 free flashcard credits upon registration!</span>
             </div>

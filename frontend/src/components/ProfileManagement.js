@@ -229,18 +229,18 @@ const ProfileManagement = ({ user, onUpdate }) => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-3 sm:p-4">
             <div className="max-w-2xl mx-auto">
-                <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
+                <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-8 border border-gray-100">
                     {/* Header */}
-                    <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
+                        <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                             Manage Profile
                         </h2>
                         {!isEditing && (
                             <button
                                 onClick={() => setIsEditing(true)}
-                                className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                                className="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                             >
                                 <Edit3 className="h-4 w-4 mr-2" />
                                 Edit Profile
@@ -251,7 +251,7 @@ const ProfileManagement = ({ user, onUpdate }) => {
                     {/* Profile Picture Section */}
                     <div className="flex flex-col items-center mb-8">
                         <div className="relative">
-                            <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
+                            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl sm:text-4xl font-bold shadow-lg">
                                 {imagePreview ? (
                                     <img 
                                         src={imagePreview} 
@@ -268,7 +268,7 @@ const ProfileManagement = ({ user, onUpdate }) => {
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
                                     disabled={uploadingImage}
-                                    className="w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+                                    className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
                                 >
                                     {uploadingImage ? (
                                         <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
@@ -280,7 +280,7 @@ const ProfileManagement = ({ user, onUpdate }) => {
                                 {profile.profileImage && (
                                     <button
                                         onClick={handleDeleteImage}
-                                        className="w-10 h-10 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+                                        className="w-9 h-9 sm:w-10 sm:h-10 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
                                     >
                                         <Trash2 className="h-4 w-4" />
                                     </button>
@@ -305,8 +305,8 @@ const ProfileManagement = ({ user, onUpdate }) => {
                     {/* Profile Form */}
                     <div className="space-y-6">
                         {/* Name - Not editable */}
-                        <div className="flex items-center p-4 bg-gray-50 rounded-xl">
-                            <User className="h-5 w-5 text-gray-500 mr-3" />
+                        <div className="flex items-start sm:items-center p-4 bg-gray-50 rounded-xl">
+                            <User className="h-5 w-5 text-gray-500 mr-3 mt-0.5 sm:mt-0 flex-shrink-0" />
                             <div className="flex-1">
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                                     Full Name
@@ -317,13 +317,13 @@ const ProfileManagement = ({ user, onUpdate }) => {
                         </div>
 
                         {/* Email */}
-                        <div className="flex items-center p-4 bg-gray-50 rounded-xl">
-                            <Mail className="h-5 w-5 text-gray-500 mr-3" />
+                        <div className="flex items-start sm:items-center p-4 bg-gray-50 rounded-xl">
+                            <Mail className="h-5 w-5 text-gray-500 mr-3 mt-0.5 sm:mt-0 flex-shrink-0" />
                             <div className="flex-1">
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                                     Email Address
                                 </label>
-                                <p className="text-gray-900 font-medium">{profile.email}</p>
+                                <p className="text-gray-900 font-medium break-all">{profile.email}</p>
                                 {!showEmailChange ? (
                                     <button
                                         onClick={() => setShowEmailChange(true)}
@@ -353,7 +353,7 @@ const ProfileManagement = ({ user, onUpdate }) => {
                                             }))}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
-                                        <div className="flex gap-2">
+                                        <div className="flex flex-col sm:flex-row gap-2">
                                             <button
                                                 onClick={handleEmailChangeRequest}
                                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
@@ -373,8 +373,8 @@ const ProfileManagement = ({ user, onUpdate }) => {
                         </div>
 
                         {/* Birth Date - Not editable */}
-                        <div className="flex items-center p-4 bg-gray-50 rounded-xl">
-                            <Calendar className="h-5 w-5 text-gray-500 mr-3" />
+                        <div className="flex items-start sm:items-center p-4 bg-gray-50 rounded-xl">
+                            <Calendar className="h-5 w-5 text-gray-500 mr-3 mt-0.5 sm:mt-0 flex-shrink-0" />
                             <div className="flex-1">
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                                     Birth Date
@@ -387,8 +387,8 @@ const ProfileManagement = ({ user, onUpdate }) => {
                         </div>
 
                         {/* School Name - Editable */}
-                        <div className="flex items-center p-4 bg-gray-50 rounded-xl">
-                            <School className="h-5 w-5 text-gray-500 mr-3" />
+                        <div className="flex items-start sm:items-center p-4 bg-gray-50 rounded-xl">
+                            <School className="h-5 w-5 text-gray-500 mr-3 mt-0.5 sm:mt-0 flex-shrink-0" />
                             <div className="flex-1">
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                                     School/University
@@ -413,8 +413,8 @@ const ProfileManagement = ({ user, onUpdate }) => {
                         </div>
 
                         {/* Phone Number - Editable */}
-                        <div className="flex items-center p-4 bg-gray-50 rounded-xl">
-                            <Phone className="h-5 w-5 text-gray-500 mr-3" />
+                        <div className="flex items-start sm:items-center p-4 bg-gray-50 rounded-xl">
+                            <Phone className="h-5 w-5 text-gray-500 mr-3 mt-0.5 sm:mt-0 flex-shrink-0" />
                             <div className="flex-1">
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                                     Phone Number
@@ -441,13 +441,13 @@ const ProfileManagement = ({ user, onUpdate }) => {
 
                     {/* Action Buttons */}
                     {isEditing && (
-                        <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
+                        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 mt-8 pt-6 border-t border-gray-200">
                             <button
                                 onClick={() => {
                                     setIsEditing(false);
                                     fetchProfile(); // Reset changes
                                 }}
-                                className="flex items-center px-6 py-3 bg-gray-300 text-gray-700 rounded-xl hover:bg-gray-400 transition-all duration-200"
+                                className="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-gray-300 text-gray-700 rounded-xl hover:bg-gray-400 transition-all duration-200"
                             >
                                 <X className="h-4 w-4 mr-2" />
                                 Cancel
@@ -455,7 +455,7 @@ const ProfileManagement = ({ user, onUpdate }) => {
                             <button
                                 onClick={handleProfileUpdate}
                                 disabled={loading}
-                                className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? (
                                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>

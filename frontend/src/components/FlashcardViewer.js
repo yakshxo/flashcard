@@ -63,7 +63,7 @@ function FlashcardViewer() {
       <div className="min-h-screen bg-gray-50 py-6">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900">Flashcard set not found</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Flashcard set not found</h2>
             <Link to="/dashboard" className="text-blue-600 hover:text-blue-500">
               Return to Dashboard
             </Link>
@@ -83,7 +83,7 @@ function FlashcardViewer() {
           <Link to="/dashboard" className="text-blue-600 hover:text-blue-500 text-sm">
             ← Back to Dashboard
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 mt-2">{flashcardSet.title}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mt-2 break-words">{flashcardSet.title}</h1>
           {flashcardSet.description && (
             <p className="text-gray-600 mt-1">{flashcardSet.description}</p>
           )}
@@ -92,10 +92,10 @@ function FlashcardViewer() {
         {/* Progress */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-600">
+            <span className="text-xs sm:text-sm text-gray-600">
               Card {currentCardIndex + 1} of {flashcardSet.cards.length}
             </span>
-            <span className="text-sm text-gray-600">
+            <span className="text-xs sm:text-sm text-gray-600">
               {Math.round(((currentCardIndex + 1) / flashcardSet.cards.length) * 100)}% Complete
             </span>
           </div>
@@ -110,20 +110,20 @@ function FlashcardViewer() {
         </div>
 
         {/* Flashcard */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-6 min-h-96">
+        <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 mb-6 min-h-[18rem] sm:min-h-96">
           <div className="text-center">
             <div className="mb-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">
+              <h2 className="text-base sm:text-lg font-medium text-gray-900 mb-4">
                 {showAnswer ? 'Answer' : 'Question'}
               </h2>
-              <div className="text-xl text-gray-800 leading-relaxed">
+              <div className="text-lg sm:text-xl text-gray-800 leading-relaxed break-words">
                 {showAnswer ? currentCard.answer : currentCard.question}
               </div>
             </div>
 
             <button
               onClick={toggleAnswer}
-              className="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors"
+              className="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors"
             >
               {showAnswer ? 'Show Question' : 'Show Answer'}
             </button>
@@ -146,16 +146,15 @@ function FlashcardViewer() {
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
           <button
             onClick={prevCard}
             disabled={currentCardIndex === 0}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md font-medium hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full sm:w-auto px-4 py-2 bg-gray-300 text-gray-700 rounded-md font-medium hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             ← Previous
           </button>
-
-          <div className="flex space-x-2">
+          <div className="flex max-w-full items-center justify-center gap-2 overflow-x-auto py-1">
             {flashcardSet.cards.map((_, index) => (
               <button
                 key={index}
@@ -177,7 +176,7 @@ function FlashcardViewer() {
           <button
             onClick={nextCard}
             disabled={currentCardIndex === flashcardSet.cards.length - 1}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Next →
           </button>
@@ -187,10 +186,10 @@ function FlashcardViewer() {
         {currentCardIndex === flashcardSet.cards.length - 1 && (
           <div className="mt-8 text-center">
             <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-              <h3 className="text-lg font-medium text-green-800 mb-2">
+              <h3 className="text-base sm:text-lg font-medium text-green-800 mb-2">
                 🎉 Great job! You've studied all the cards!
               </h3>
-              <p className="text-green-700 mb-4">
+              <p className="text-sm sm:text-base text-green-700 mb-4">
                 You completed {flashcardSet.cards.length} flashcards from "{flashcardSet.title}"
               </p>
               <Link
